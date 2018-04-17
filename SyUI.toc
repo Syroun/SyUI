@@ -1,4 +1,4 @@
-## Interface: 60200
+## Interface: 70300
 ## Title: SyUI
 ## Version: 0.0.1
 ## Author: Syroun
@@ -8,4 +8,3 @@ LeftData.lua
 xp.lua
 Power.lua
 combo.lua
-test.lua

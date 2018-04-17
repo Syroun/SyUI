@@ -31,6 +31,7 @@ function update(self, event)
   Current, Max = UnitPower("player"), UnitPowerMax("player")
   self:SetMinMaxValues(0, Max)
   self:SetValue(Current)
+  percent = Current / Max
 end
 
 function powercolor(self, event, red, green, blue, alpha)
@@ -65,21 +66,41 @@ function powercolor(self, event, red, green, blue, alpha)
     blue = 1
     alpha = 1
   end
+  if powerToken == "FURY" then
+	red = 0.788
+	green = 0.259
+	blue = 0.992
+	alpha = 1
+end
   return red, green, blue, alpha
 end
 
-function combat(self, event, red, green, blue, alpha, ...)
-  if event == "PLAYER_REGEN_DISABLED" then
-    self:Show()
-  elseif event == "PLAYER_REGEN_ENABLED" then
-    self:Hide()
-  elseif event == "PLAYER_ENTERING_WORLD" then
-    self:Hide()
-  elseif event == "SPELLS_CHANGED" then
-    Current, Max = UnitPower("player"), UnitPowerMax("player")
-    p:SetStatusBarColor(powercolor(red,green,blue,alpha))
-  end
+function visibility(event)
+	local inCombat = true
+	if event == "PLAYER_REGEN_DISABLED" or InCombatLockdown() then
+		inCombat = true
+	else
+		inCombat = false
+	end
+	if inCombat == false then
+		self:Show()
+	else
+		self:Hide()
+	end
 end
+	
+--function combat(self, event, red, green, blue, alpha, ...)
+  --if event == "PLAYER_REGEN_DISABLED" then
+    --self:Show()
+  --elseif event == "PLAYER_REGEN_ENABLED" then
+    --self:Hide()
+  --elseif event == "PLAYER_ENTERING_WORLD" then
+    --self:Hide()
+  --elseif event == "SPELLS_CHANGED" then
+    --Current, Max = UnitPower("player"), UnitPowerMax("player")
+    --p:SetStatusBarColor(powercolor(red,green,blue,alpha))
+  --end
+--end
 
 ------------------------------------------------------------
 -- Create Frame
@@ -97,10 +118,11 @@ f:SetBackdrop({
   })
 f:SetBackdropColor(.25,.25,.25)
 f:SetBackdropBorderColor(0,0,0)
+f:SetTexCoord(0 percent, 0, 1)
 
 f:RegisterAllEvents()
 
-f:SetScript("OnEvent", combat)
+f:SetScript("OnEvent", visibility)
 
 p = CreateFrame("StatusBar",nil,f)
 p:SetStatusBarTexture("Interface/AddOns/Tukui/Medias/Textures/normTex")
@@ -113,4 +135,4 @@ p:SetPoint("CENTER")
 p:RegisterAllEvents()
 
 p:SetScript("OnUpdate", update)
-p:SetScript("OnEvent", combat)
+p:SetScript("OnEvent", visibility)
